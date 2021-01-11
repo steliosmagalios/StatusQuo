@@ -4,16 +4,30 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HomeViewModel extends ViewModel {
 
-    private MutableLiveData<String> mText;
+    private MutableLiveData<List<String>> trends;
 
     public HomeViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is home fragment");
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public LiveData<List<String>> getTrends() {
+        if (trends == null) {
+            trends = new MutableLiveData<>();
+            fetchTrends();
+        }
+        return trends;
+    }
+
+    private void fetchTrends() {
+        List<String> items = new ArrayList<>();
+
+        // Fetch trends from TwitterAPI
+
+
+        trends.setValue(items);
     }
 }
