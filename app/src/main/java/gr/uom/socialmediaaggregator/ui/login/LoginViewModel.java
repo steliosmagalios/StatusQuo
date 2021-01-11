@@ -1,10 +1,17 @@
 package gr.uom.socialmediaaggregator.ui.login;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import android.util.Patterns;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import gr.uom.socialmediaaggregator.data.LoginRepository;
 import gr.uom.socialmediaaggregator.data.Result;
@@ -17,8 +24,13 @@ public class LoginViewModel extends ViewModel {
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
     private LoginRepository loginRepository;
 
+    private FirebaseAuth mAuth;
+
     LoginViewModel(LoginRepository loginRepository) {
         this.loginRepository = loginRepository;
+
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
     }
 
     LiveData<LoginFormState> getLoginFormState() {
@@ -30,15 +42,15 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void login(String username, String password) {
-        // can be launched in a separate asynchronous job
-        Result<LoggedInUser> result = loginRepository.login(username, password);
-
-        if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
-        } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
-        }
+        mAuth.signInWithEmailAndPassword(username, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser currentUser = mAuth.getCurrentUser();
+                        loginResult.setValue(new LoginResult(new LoggedInUserView(currentUser.getEmail())));
+                    } else {
+                        loginResult.setValue(new LoginResult(R.string.login_failed));
+                    }
+                });
     }
 
     public void loginDataChanged(String username, String password) {

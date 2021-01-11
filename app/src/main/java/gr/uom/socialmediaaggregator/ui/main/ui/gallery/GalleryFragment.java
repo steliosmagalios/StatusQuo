@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import gr.uom.socialmediaaggregator.ui.main.R;
+import gr.uom.socialmediaaggregator.R;
 
 public class GalleryFragment extends Fragment {
 
