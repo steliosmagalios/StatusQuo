@@ -18,8 +18,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import gr.uom.socialmediaaggregator.R;
+import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
+import gr.uom.socialmediaaggregator.data.TwitterWrapper;
 import gr.uom.socialmediaaggregator.ui.main.MainActivity;
 
 public class LoginActivity extends AppCompatActivity {
@@ -27,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     private LoginViewModel loginViewModel;
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
                 .get(LoginViewModel.class);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         // Login bypassing used for development purposes
         findViewById(R.id.btnBypass).setOnClickListener( v -> {
@@ -114,15 +121,40 @@ public class LoginActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            updateUiWithUser(new LoggedInUserView(currentUser.getEmail()));
         }
 
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        // Get the API and User keys
+        db.collection("api-keys").get()
+            .addOnCompleteListener(taskKeys -> {
+                if (taskKeys.isSuccessful()) {
+                    for (QueryDocumentSnapshot doc : taskKeys.getResult()) {
+                        switch (SocialMediaPlatform.valueOf(doc.getId())) {
+                            case Twitter:
+                                TwitterWrapper.setApiKeys(doc.getString("api_key"), doc.getString("api_key_secret"));
+                            case Facebook:
+                                break;
+                        }
+                    }
+
+                    db.collection("users").document(mAuth.getCurrentUser().getUid())
+                        .get().addOnCompleteListener(taskUser -> {
+                            if (taskUser.isSuccessful()) {
+                                DocumentSnapshot result = taskUser.getResult();
+                                TwitterWrapper.setUserKeys(result.getString("twitter_access_token"), result.getString("twitter_access_token_secret"));
+
+
+                                Intent intent = new Intent(this, MainActivity.class);
+                                startActivity(intent);
+                            }
+                    });
+
+                }
+            });
+
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
