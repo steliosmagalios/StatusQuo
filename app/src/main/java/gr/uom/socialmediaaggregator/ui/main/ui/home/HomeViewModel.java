@@ -4,17 +4,19 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import gr.uom.socialmediaaggregator.api.tasks.GetTwitterTrends;
+import twitter4j.Trend;
 
 public class HomeViewModel extends ViewModel {
 
-    private MutableLiveData<List<String>> trends;
+    private MutableLiveData<List<Trend>> trends;
 
     public HomeViewModel() {
     }
 
-    public LiveData<List<String>> getTrends() {
+    public LiveData<List<Trend>> getTrends() {
         if (trends == null) {
             trends = new MutableLiveData<>();
             fetchTrends();
@@ -23,11 +25,7 @@ public class HomeViewModel extends ViewModel {
     }
 
     private void fetchTrends() {
-        List<String> items = new ArrayList<>();
-
         // Fetch trends from TwitterAPI
-
-
-        trends.setValue(items);
+        new GetTwitterTrends(trends).execute();
     }
 }

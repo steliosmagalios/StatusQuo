@@ -11,12 +11,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import gr.uom.socialmediaaggregator.R;
+import twitter4j.Trend;
 
 public class TrendsAdapter extends RecyclerView.Adapter<TrendsAdapter.ViewHolder> {
 
-    private List<String> trendsList;
+    private final List<Trend> trendsList;
 
-    public TrendsAdapter(List<String> trendsList) {
+    public TrendsAdapter(List<Trend> trendsList) {
         this.trendsList = trendsList;
     }
 
@@ -32,9 +33,9 @@ public class TrendsAdapter extends RecyclerView.Adapter<TrendsAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // Get element from your dataset at this position and replace the
-        // contents of the view with that element
-        holder.txtTrend.setText(trendsList.get(position));
+        Trend item = trendsList.get(position);
+        holder.txtTrend.setText(item.getName());
+        holder.itemView.setTag(item);
     }
 
     @Override
@@ -42,7 +43,7 @@ public class TrendsAdapter extends RecyclerView.Adapter<TrendsAdapter.ViewHolder
         return trendsList.size();
     }
 
-    public void setTrendsList(List<String> trendsList) {
+    public void setTrendsList(List<Trend> trendsList) {
         this.trendsList.clear();
         this.trendsList.addAll(trendsList);
         notifyDataSetChanged();

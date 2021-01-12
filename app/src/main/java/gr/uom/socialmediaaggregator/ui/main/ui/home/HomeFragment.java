@@ -27,6 +27,7 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         final RecyclerView trendsList = root.findViewById(R.id.trendsList);
         trendsList.setLayoutManager(layoutManager);
+        
 
         TrendsAdapter adapter = new TrendsAdapter(new ArrayList<>());
         trendsList.setAdapter(adapter);
