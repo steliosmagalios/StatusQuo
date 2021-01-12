@@ -48,6 +48,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:26.2.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
 
     // Twitter4j
     implementation "org.twitter4j:twitter4j-core:4.0.7"
