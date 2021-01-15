@@ -11,6 +11,7 @@ public class Post {
     private String user;
     private String body;
     private Date postedDate;
+    private Uri mediaUri;
     private SocialMediaPlatform socialMediaPlatform;
     private Uri redirectUri = null;
 
@@ -60,6 +61,14 @@ public class Post {
 
     public void setRedirectUri(Uri redirectUri) {
         this.redirectUri = redirectUri;
+    }
+
+    public Uri getMediaUri() {
+        return mediaUri;
+    }
+
+    public void setMediaUri(Uri mediaUri) {
+        this.mediaUri = mediaUri;
     }
 
     public static class Builder {
