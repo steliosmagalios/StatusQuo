@@ -22,6 +22,7 @@ import gr.uom.socialmediaaggregator.data.model.post.Post;
 
 public class PostsAdapter extends ArrayAdapter<Post> implements AdapterView.OnItemClickListener {
 
+    public static final int TRUNCATED_LENGTH = 50;
     private final LayoutInflater inflater;
     private final int layoutResource;
 
@@ -62,8 +63,25 @@ public class PostsAdapter extends ArrayAdapter<Post> implements AdapterView.OnIt
         Post post = postList.get(position);
 
         viewHolder.txtUser.setText(post.getUser());
-        viewHolder.txtBody.setText(post.getTruncatedBody(50));
+        viewHolder.txtBody.setText(post.getTruncatedBody(TRUNCATED_LENGTH));
         viewHolder.txtDate.setText(post.getPostedDate().toString());
+
+        int iconId;
+        switch (post.getSocialMediaPlatform()) {
+            case Twitter:
+                iconId = R.drawable.ic_twitter;
+                break;
+            case Facebook:
+                iconId = R.drawable.ic_facebook;
+                break;
+            case Instagram:
+                iconId = R.drawable.ic_instagram;
+                break;
+            default:
+                iconId = R.drawable.ic_baseline_broken_image_24;
+                break;
+        }
+        viewHolder.imgPlatform.setImageResource(iconId);
 
 
         return convertView;
