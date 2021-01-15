@@ -53,4 +53,7 @@ dependencies {
 
     // Twitter4j
     implementation "org.twitter4j:twitter4j-core:4.0.7"
+
+    // https://mvnrepository.com/artifact/com.restfb/restfb
+    implementation "com.restfb:restfb:3.13.0"
 }
