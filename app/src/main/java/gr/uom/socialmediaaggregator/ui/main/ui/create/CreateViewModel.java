@@ -1,6 +1,6 @@
 package gr.uom.socialmediaaggregator.ui.main.ui.create;
 
-import android.util.Log;
+import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -13,16 +13,17 @@ import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
 
 public class CreateViewModel extends ViewModel {
 
-    private final Map<SocialMediaPlatform, Boolean> publishMedia;
-
+    private MutableLiveData<Map<SocialMediaPlatform, Boolean>> publishMedia;
     private MutableLiveData<Boolean> isStorySelected;
+    private MutableLiveData<Uri> selectedImageUri;
 
     public CreateViewModel() {
-        publishMedia = new HashMap<>();
-        for (SocialMediaPlatform value : SocialMediaPlatform.values()) publishMedia.put(value, false);
+        publishMedia = new MutableLiveData<>(new HashMap<>());
+        for (SocialMediaPlatform value : SocialMediaPlatform.values())
+            publishMedia.getValue().put(value, false);
     }
 
-    public Map<SocialMediaPlatform, Boolean> getPublishMedia() {
+    public LiveData<Map<SocialMediaPlatform, Boolean>> getPublishMedia() {
         return publishMedia;
     }
 
@@ -32,13 +33,26 @@ public class CreateViewModel extends ViewModel {
         return isStorySelected;
     }
 
+    public LiveData<Uri> getSelectedImageUri() {
+        if (selectedImageUri == null)
+            selectedImageUri = new MutableLiveData<>();
+        return selectedImageUri;
+    }
+
+    public void updateImageUri(Uri uri) {
+        this.selectedImageUri.setValue(uri);
+    }
+
     public void updateStoryState(Boolean state) {
         isStorySelected.setValue(state);
     }
 
     public void changePlatformStatus(SocialMediaPlatform platform, Boolean state) {
-        publishMedia.put(platform, state);
-        publishMedia.forEach((plat, st) -> Log.d("SMA", plat.toString() + ": " + st.toString()));
+        Map<SocialMediaPlatform, Boolean> newMap = new HashMap<>(publishMedia.getValue());
+        newMap.put(platform, state);
+        publishMedia.setValue(newMap);
+//        publishMedia.put(platform, state);
+//        publishMedia.forEach((plat, st) -> Log.d("SMA", plat.toString() + ": " + st.toString()));
     }
 
 }

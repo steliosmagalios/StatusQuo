@@ -24,4 +24,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="nav_post">Post</string>
     <string name="nav_story">Story</string>
+    <string name="add_an_image">Add an Image</string>
 </resources>
