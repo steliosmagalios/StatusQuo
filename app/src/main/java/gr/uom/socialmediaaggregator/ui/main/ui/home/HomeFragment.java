@@ -4,12 +4,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -24,12 +23,10 @@ public class HomeFragment extends Fragment {
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        final RecyclerView trendsList = root.findViewById(R.id.trendsList);
-        trendsList.setLayoutManager(layoutManager);
-        
 
-        TrendsAdapter adapter = new TrendsAdapter(new ArrayList<>());
+        ListView trendsList = root.findViewById(R.id.trendsList);
+
+        TrendsAdapter adapter = new TrendsAdapter(root.getContext(), R.layout.trend_item, new ArrayList<>(), trendsList, this);
         trendsList.setAdapter(adapter);
 
         homeViewModel.getTrends().observe(getViewLifecycleOwner(), adapter::setTrendsList);

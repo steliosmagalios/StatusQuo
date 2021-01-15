@@ -1,61 +1,91 @@
 package gr.uom.socialmediaaggregator.ui.main.ui.home;
 
+import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import java.util.List;
 
 import gr.uom.socialmediaaggregator.R;
 import twitter4j.Trend;
 
-public class TrendsAdapter extends RecyclerView.Adapter<TrendsAdapter.ViewHolder> {
+public class TrendsAdapter extends ArrayAdapter<Trend> implements AdapterView.OnItemClickListener {
 
-    private final List<Trend> trendsList;
+    private final LayoutInflater inflater;
+    private final int layoutResource;
+    private List<Trend> trendsList;
 
-    public TrendsAdapter(List<Trend> trendsList) {
-        this.trendsList = trendsList;
+    private final ListView view;
+    private final Fragment fragment;
+
+    public TrendsAdapter(@NonNull Context context, int resource, @NonNull List<Trend> objects, ListView view, Fragment fragment) {
+        super(context, resource, objects);
+        this.inflater = LayoutInflater.from(context);
+        this.layoutResource = resource;
+        this.trendsList = objects;
+        this.view = view;
+        this.fragment = fragment;
+
+        view.setOnItemClickListener(this);
+    }
+
+    @Override
+    public int getCount() {
+        return trendsList.size();
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Create a new view, which defines the UI of the list item
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.trend_item, parent, false);
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        ViewHolder viewHolder;
 
-        return new ViewHolder(view);
-    }
+        if(convertView == null){
+            convertView = inflater.inflate(layoutResource, parent, false);
+            viewHolder = new ViewHolder(convertView);
+            convertView.setTag(viewHolder);
+        }
+        else {
+            viewHolder = (ViewHolder)convertView.getTag();
+        }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Trend item = trendsList.get(position);
-        holder.txtTrend.setText(item.getName());
-        holder.itemView.setTag(item);
-    }
+        Trend trend = trendsList.get(position);
 
-    @Override
-    public int getItemCount() {
-        return trendsList.size();
+        viewHolder.txtTrend.setText(trend.getName());
+
+        return convertView;
     }
 
     public void setTrendsList(List<Trend> trendsList) {
-        this.trendsList.clear();
-        this.trendsList.addAll(trendsList);
-        notifyDataSetChanged();
+        this.trendsList = trendsList;
+        view.setAdapter(this);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Trend trend = trendsList.get(position);
+
+        Bundle args = new Bundle();
+        args.putSerializable("TREND", trend);
+
+        NavHostFragment.findNavController(fragment).navigate(R.id.action_nav_home_to_viewPostsFragment, args);
+    }
+
+    public class ViewHolder {
 
         final TextView txtTrend;
 
         public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-
             txtTrend = itemView.findViewById(R.id.txtTrend);
         }
     }

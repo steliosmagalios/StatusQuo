@@ -29,6 +29,7 @@ import gr.uom.socialmediaaggregator.ui.main.MainActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
+    public static final String TAG = "SMA";
     private LoginViewModel loginViewModel;
 
     private FirebaseAuth mAuth;
@@ -146,15 +147,12 @@ public class LoginActivity extends AppCompatActivity {
                                 DocumentSnapshot result = taskUser.getResult();
                                 TwitterWrapper.setUserKeys(result.getString("twitter_access_token"), result.getString("twitter_access_token_secret"));
 
-
                                 Intent intent = new Intent(this, MainActivity.class);
                                 startActivity(intent);
                             }
                     });
-
                 }
             });
-
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
