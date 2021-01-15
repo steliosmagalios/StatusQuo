@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import gr.uom.socialmediaaggregator.api.tasks.GetTwitterTrends;
@@ -27,5 +28,11 @@ public class HomeViewModel extends ViewModel {
     private void fetchTrends() {
         // Fetch trends from TwitterAPI
         new GetTwitterTrends(trends).execute();
+    }
+
+    public List<Trend> searchOnTrends(String query) {
+        List<Trend> trendsList = new ArrayList<>(trends.getValue());
+        trendsList.removeIf(trend -> !trend.getName().contains(query));
+        return trendsList;
     }
 }
