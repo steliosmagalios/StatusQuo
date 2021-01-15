@@ -27,6 +27,8 @@ public class GetTwitterTrends extends AsyncTask<Void, Void, Trends> {
     protected Trends doInBackground(Void... voids) {
         Twitter twitter = TwitterWrapper.getInstance();
 
+        // TODO: 15-Jan-21 Use Twitter API to fetch the trends if the user is not signed
+
         Trends trends;
         try {
              trends = twitter.getPlaceTrends(GREECE_WOEID);

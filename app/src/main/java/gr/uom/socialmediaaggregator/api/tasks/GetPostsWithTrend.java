@@ -6,8 +6,8 @@ import android.os.AsyncTask;
 import java.util.ArrayList;
 import java.util.List;
 
+import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
 import gr.uom.socialmediaaggregator.data.TwitterWrapper;
-import gr.uom.socialmediaaggregator.data.model.post.Platform;
 import gr.uom.socialmediaaggregator.data.model.post.Post;
 import gr.uom.socialmediaaggregator.ui.main.ui.view_posts.PostsAdapter;
 import twitter4j.Query;
@@ -53,7 +53,7 @@ public class GetPostsWithTrend extends AsyncTask<Void, Void, List<Status>> {
         List<Post> posts = new ArrayList<>();
         tweets.forEach(status -> {
             Post.Builder builder = new Post.Builder()
-                .setPlatform(Platform.Twitter)
+                .setSocialMediaPlatform(SocialMediaPlatform.Twitter)
                 .setUser(status.getUser().getScreenName())
                 .setBody(status.getText())
                 .setPostedDate(status.getCreatedAt())

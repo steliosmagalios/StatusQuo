@@ -16,10 +16,9 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="gr.uom.socialmediaaggregator.ui.main.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_create"
+        android:name="gr.uom.socialmediaaggregator.ui.main.ui.create.CreateFragment"
+        android:label="@string/menu_create" />
 
     <fragment
         android:id="@+id/nav_slideshow"

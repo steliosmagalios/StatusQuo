@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.main.ui.create.CreateFragment">
+
+    <EditText
+        android:id="@+id/txtPostText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:hint="Say something..."
+        android:inputType="textMultiLine"
+        app:layout_constraintEnd_toEndOf="@+id/togglePostType"
+        app:layout_constraintStart_toStartOf="@+id/togglePostType"
+        app:layout_constraintTop_toBottomOf="@+id/togglePostType" />
+
+    <ImageButton
+        android:id="@+id/btnSelectImage"
+        style="@android:style/Widget.Material.ImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_baseline_image_search_24"
+        app:layout_constraintStart_toStartOf="@+id/togglePostType"
+        app:layout_constraintTop_toBottomOf="@+id/txtPostText" />
+
+    <TextView
+        android:id="@+id/txtSelectedName"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:text="Add an Image"
+        app:layout_constraintBottom_toBottomOf="@+id/btnSelectImage"
+        app:layout_constraintEnd_toEndOf="@+id/togglePostType"
+        app:layout_constraintStart_toEndOf="@+id/btnSelectImage"
+        app:layout_constraintTop_toTopOf="@+id/btnSelectImage" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Publish on:"
+        app:layout_constraintStart_toStartOf="@+id/btnSelectImage"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="@+id/txtSelectedName"
+        app:layout_constraintStart_toStartOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/textView3">
+
+        <Switch
+            android:id="@+id/switchTwitter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Twitter" />
+
+        <Switch
+            android:id="@+id/switchFacebook"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Facebook" />
+
+        <Switch
+            android:id="@+id/switchInstagram"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Instagram" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnPublish"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Publish"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <ToggleButton
+        android:id="@+id/togglePostType"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:checked="false"
+        android:ellipsize="middle"
+        android:textOff="Post"
+        android:textOn="Story"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="0dp"
+        android:layout_height="192dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/txtSelectedName"
+        app:layout_constraintStart_toStartOf="@+id/btnSelectImage"
+        app:layout_constraintTop_toBottomOf="@+id/txtSelectedName"
+        tools:src="@tools:sample/avatars" />
+</androidx.constraintlayout.widget.ConstraintLayout>
