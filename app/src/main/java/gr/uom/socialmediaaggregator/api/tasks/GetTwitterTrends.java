@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import java.util.Arrays;
 import java.util.List;
 
-import gr.uom.socialmediaaggregator.data.TwitterWrapper;
+import gr.uom.socialmediaaggregator.api.wrappers.TwitterWrapper;
 import twitter4j.Trend;
 import twitter4j.Trends;
 import twitter4j.Twitter;

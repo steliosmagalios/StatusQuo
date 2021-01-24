@@ -14,7 +14,7 @@ import java.util.List;
 
 import gr.uom.socialmediaaggregator.R;
 import gr.uom.socialmediaaggregator.api.tasks.GetPostsWithTrend;
-import gr.uom.socialmediaaggregator.data.model.post.Post;
+import gr.uom.socialmediaaggregator.data.model.Post;
 import twitter4j.Trend;
 
 public class ViewPostsFragment extends Fragment {

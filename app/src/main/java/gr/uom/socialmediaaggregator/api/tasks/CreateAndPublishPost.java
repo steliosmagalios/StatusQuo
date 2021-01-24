@@ -5,8 +5,8 @@ import android.os.AsyncTask;
 import java.io.InputStream;
 import java.util.List;
 
+import gr.uom.socialmediaaggregator.api.wrappers.TwitterWrapper;
 import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
-import gr.uom.socialmediaaggregator.data.TwitterWrapper;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;

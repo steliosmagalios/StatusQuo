@@ -54,6 +54,9 @@ dependencies {
     // Twitter4j
     implementation "org.twitter4j:twitter4j-core:4.0.7"
 
-    // https://mvnrepository.com/artifact/com.restfb/restfb
-    implementation "com.restfb:restfb:3.13.0"
+    // Facebook login
+    implementation 'com.facebook.android:facebook-login:4.42.0'
+    implementation 'com.facebook.android:facebook-android-sdk:4.42.0'
+
+    implementation 'joda-time:joda-time:2.10.9'
 }

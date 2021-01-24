@@ -23,8 +23,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import gr.uom.socialmediaaggregator.R;
+import gr.uom.socialmediaaggregator.api.wrappers.TwitterWrapper;
 import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
-import gr.uom.socialmediaaggregator.data.TwitterWrapper;
 import gr.uom.socialmediaaggregator.ui.main.MainActivity;
 
 public class LoginActivity extends AppCompatActivity {

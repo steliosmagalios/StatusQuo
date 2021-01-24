@@ -1,4 +1,4 @@
-package gr.uom.socialmediaaggregator.data;
+package gr.uom.socialmediaaggregator.api.wrappers;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
@@ -6,13 +6,11 @@ import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterWrapper {
 
-    public static final String TAG = "SMA";
     private static String API_KEY;
     private static String API_SECRET;
 
     private static String ACCESS_TOKEN;
     private static String ACCESS_SECRET;
-
 
     private static Twitter instance;
 

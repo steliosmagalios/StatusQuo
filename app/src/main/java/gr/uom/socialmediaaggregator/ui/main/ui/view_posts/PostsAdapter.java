@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment;
 import java.util.List;
 
 import gr.uom.socialmediaaggregator.R;
-import gr.uom.socialmediaaggregator.data.model.post.Post;
+import gr.uom.socialmediaaggregator.data.model.Post;
 
 public class PostsAdapter extends ArrayAdapter<Post> implements AdapterView.OnItemClickListener {
 
@@ -62,7 +62,7 @@ public class PostsAdapter extends ArrayAdapter<Post> implements AdapterView.OnIt
 
         Post post = postList.get(position);
 
-        viewHolder.txtUser.setText(post.getUser());
+        viewHolder.txtUser.setText('@' + post.getUser());
         viewHolder.txtBody.setText(post.getTruncatedBody(TRUNCATED_LENGTH));
         viewHolder.txtDate.setText(post.getPostedDate().toString());
 

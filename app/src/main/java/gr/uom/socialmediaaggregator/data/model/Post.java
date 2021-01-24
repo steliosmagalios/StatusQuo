@@ -1,4 +1,4 @@
-package gr.uom.socialmediaaggregator.data.model.post;
+package gr.uom.socialmediaaggregator.data.model;
 
 import android.net.Uri;
 
@@ -6,7 +6,7 @@ import java.util.Date;
 
 import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
 
-public class Post {
+public class Post implements Comparable<Post> {
 
     private String user;
     private String body;
@@ -69,6 +69,11 @@ public class Post {
 
     public void setMediaUri(Uri mediaUri) {
         this.mediaUri = mediaUri;
+    }
+
+    @Override
+    public int compareTo(Post o) {
+        return this.postedDate.compareTo(o.postedDate);
     }
 
     public static class Builder {
