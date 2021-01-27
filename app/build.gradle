@@ -18,6 +18,11 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildTypes.each {
+        it.buildConfigField 'String', 'TWITTER_API_KEY', TWITTER_API_KEY
+        it.buildConfigField 'String', 'TWITTER_API_KEY_SECRET', TWITTER_API_KEY_SECRET
+    }
+
     buildTypes {
         release {
             minifyEnabled false

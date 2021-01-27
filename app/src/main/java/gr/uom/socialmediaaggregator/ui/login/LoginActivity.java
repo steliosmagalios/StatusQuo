@@ -21,17 +21,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import gr.uom.socialmediaaggregator.R;
+import gr.uom.socialmediaaggregator.api.tasks.GetTwitterOAuth2Token;
 import gr.uom.socialmediaaggregator.api.wrappers.InstagramWrapper;
 import gr.uom.socialmediaaggregator.api.wrappers.TwitterWrapper;
-import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
 import gr.uom.socialmediaaggregator.ui.main.MainActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static final String TAG = "SMA";
+    public static final String TWITTER_ACCESS_TOKEN_KEY = "twitter_access_token";
+    public static final String TWITTER_ACCESS_TOKEN_SECRET_KEY = "twitter_access_token_secret";
     private LoginViewModel loginViewModel;
 
     private FirebaseAuth mAuth;
@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
         fetchAPIKeys();
 
         // Login bypassing used for development purposes
-        findViewById(R.id.btnBypass).setOnClickListener( v -> {
+        findViewById(R.id.btnBypass).setOnClickListener(v -> {
             loginViewModel.login("demo@sma.com", "123456");
         });
 
@@ -122,17 +122,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void fetchAPIKeys() {
-        db.collection("api_keys").get()
-            .addOnSuccessListener(snapshot -> {
-                snapshot.getDocuments().forEach(doc -> {
-                    if (doc.getId().equals(SocialMediaPlatform.Twitter.toString())) {
-                        // TODO: 25-Jan-21 Create new flow
-                        TwitterWrapper.setApiKeys(doc.getString("api_key"), doc.getString("api_key_secret"));
-                    }
-                });
-            }
-        );
-
         // Facebook
         AccessToken token = AccessToken.getCurrentAccessToken();
         if (token != null && !token.isExpired())
@@ -151,38 +140,29 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateUiWithUser(LoggedInUserView model) { // TODO: 25-Jan-21 Cleanup
-        // Get the API and User keys
-        db.collection("api-keys").get()
-            .addOnCompleteListener(taskKeys -> {
-                if (taskKeys.isSuccessful()) {
-                    for (QueryDocumentSnapshot doc : taskKeys.getResult()) {
-                        switch (SocialMediaPlatform.valueOf(doc.getId())) {
-                            case Twitter:
-                                TwitterWrapper.setApiKeys(doc.getString("api_key"), doc.getString("api_key_secret"));
-                            case Facebook:
-                                break;
+        // Get the keys for Twitter and go to the next activity
+        db.collection("users").document(mAuth.getCurrentUser().getUid()).get()
+                .addOnCompleteListener(task -> {
+                    // If a user exists get his keys and add them to twitter
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot snapshot = task.getResult();
+                        if (snapshot != null) {
+                            TwitterWrapper.init(
+                                    snapshot.getString(TWITTER_ACCESS_TOKEN_KEY),
+                                    snapshot.getString(TWITTER_ACCESS_TOKEN_SECRET_KEY)
+                            );
+                        } else {
+                            TwitterWrapper.init();
                         }
+
+                        // Get the BearerToken and move to the next activity
+                        new GetTwitterOAuth2Token(v -> {
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                        }).execute();
                     }
-
-                    db.collection("users").document(mAuth.getCurrentUser().getUid())
-                        .get().addOnCompleteListener(taskUser -> {
-                            if (taskUser.isSuccessful()) {
-                                DocumentSnapshot result = taskUser.getResult();
-                                TwitterWrapper.setUserKeys(result.getString("twitter_access_token"), result.getString("twitter_access_token_secret"));
-
-                                // Instantiate instagram
-                                AccessToken facebookAccessToken = AccessToken.getCurrentAccessToken();
-                                if (facebookAccessToken != null && !facebookAccessToken.isExpired()) {
-                                    InstagramWrapper.init(facebookAccessToken);
-                                }
-
-
-                                Intent intent = new Intent(this, MainActivity.class);
-                                startActivity(intent);
-                            }
-                    });
-                }
-            });
+                });
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
