@@ -16,6 +16,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.facebook.AccessToken;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -23,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import gr.uom.socialmediaaggregator.R;
+import gr.uom.socialmediaaggregator.api.wrappers.InstagramWrapper;
 import gr.uom.socialmediaaggregator.api.wrappers.TwitterWrapper;
 import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
 import gr.uom.socialmediaaggregator.ui.main.MainActivity;
@@ -44,6 +46,9 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
+        // Fetch API keys
+        fetchAPIKeys();
 
         // Login bypassing used for development purposes
         findViewById(R.id.btnBypass).setOnClickListener( v -> {
@@ -116,6 +121,24 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    private void fetchAPIKeys() {
+        db.collection("api_keys").get()
+            .addOnSuccessListener(snapshot -> {
+                snapshot.getDocuments().forEach(doc -> {
+                    if (doc.getId().equals(SocialMediaPlatform.Twitter.toString())) {
+                        // TODO: 25-Jan-21 Create new flow
+                        TwitterWrapper.setApiKeys(doc.getString("api_key"), doc.getString("api_key_secret"));
+                    }
+                });
+            }
+        );
+
+        // Facebook
+        AccessToken token = AccessToken.getCurrentAccessToken();
+        if (token != null && !token.isExpired())
+            InstagramWrapper.init(token);
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -127,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void updateUiWithUser(LoggedInUserView model) {
+    private void updateUiWithUser(LoggedInUserView model) { // TODO: 25-Jan-21 Cleanup
         // Get the API and User keys
         db.collection("api-keys").get()
             .addOnCompleteListener(taskKeys -> {
@@ -146,6 +169,13 @@ public class LoginActivity extends AppCompatActivity {
                             if (taskUser.isSuccessful()) {
                                 DocumentSnapshot result = taskUser.getResult();
                                 TwitterWrapper.setUserKeys(result.getString("twitter_access_token"), result.getString("twitter_access_token_secret"));
+
+                                // Instantiate instagram
+                                AccessToken facebookAccessToken = AccessToken.getCurrentAccessToken();
+                                if (facebookAccessToken != null && !facebookAccessToken.isExpired()) {
+                                    InstagramWrapper.init(facebookAccessToken);
+                                }
+
 
                                 Intent intent = new Intent(this, MainActivity.class);
                                 startActivity(intent);

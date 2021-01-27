@@ -17,45 +17,61 @@ import twitter4j.Trend;
 
 public class InstagramWrapper {
 
-    // Endpoint
-    private static final String TAG_SEARCH_ID = "/ig_hashtag_search";
+    // Endpoints
+    private static final String PAGE_ID_TEMPLATE = "/%s";
     private static final String ACCOUNTS_ID = "/me/accounts";
-    private static final String PAGE_ID = "/%s";
-    private static final String MEDIA_ID = "/%s";
-    private static final String TAG_MEDIA_ID = "/%s/recent_media";
+    private static final String TAG_SEARCH_ID = "/ig_hashtag_search";
+    private static final String TAG_MEDIA_ID_TEMPLATE = "/%s/recent_media";
 
-    // Data keys
-    public static final String INSTAGRAM_BUSINESS_ACCOUNT_KEY = "instagram_business_account";
-    public static final String ID_KEY = "id";
-    public static final String DATA_KEY = "data";
+    // Keys
+    private static final String Q = "q";
+    private static final String ID = "id";
+    private static final String DATA = "data";
+    private static final String FIELDS = "fields";
+    private static final String USER_ID = "user_id";
+    private static final String INSTAGRAM_BUSINESS_ACCOUNT_KEY = "instagram_business_account";
+
     public static final String TAG = "SMA";
+
+    // Singleton stuff
+    private static InstagramWrapper instance;
+
+    public static InstagramWrapper init(AccessToken accessToken) {
+        instance = new InstagramWrapper(accessToken);
+        return instance;
+    }
+
+    public static InstagramWrapper getInstance() {
+        return instance;
+    }
+
 
     private final AccessToken accessToken;
 
-    public InstagramWrapper(AccessToken accessToken) {
+    private InstagramWrapper(AccessToken accessToken) {
         this.accessToken = accessToken;
     }
 
-    public String getPageIdFromUser() throws JSONException {
+    private String getPageIdFromUser() throws JSONException {
         GraphResponse response = makeGraphRequest(ACCOUNTS_ID);
-        return response.getJSONObject().getJSONArray("data").getJSONObject(0).getString("id");
+        return response.getJSONObject().getJSONArray(DATA).getJSONObject(0).getString(ID);
     }
 
-    public String getIGUserFromPage(String pageId) throws JSONException {
+    private String getIGUserFromPage(String pageId) throws JSONException {
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("fields", INSTAGRAM_BUSINESS_ACCOUNT_KEY);
+        parameters.put(FIELDS, INSTAGRAM_BUSINESS_ACCOUNT_KEY);
 
-        GraphResponse response = makeGraphRequest(String.format(PAGE_ID, pageId), parameters);
-        return response.getJSONObject().getJSONObject(INSTAGRAM_BUSINESS_ACCOUNT_KEY).getString(ID_KEY);
+        GraphResponse response = makeGraphRequest(String.format(PAGE_ID_TEMPLATE, pageId), parameters);
+        return response.getJSONObject().getJSONObject(INSTAGRAM_BUSINESS_ACCOUNT_KEY).getString(ID);
     }
 
-    public String getTagIdFromQuery(String userId, String query) throws JSONException {
+    private String getTagIdFromQuery(String userId, String query) throws JSONException {
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("user_id", userId);
-        parameters.put("q", query.charAt(0) == '#' ? query.substring(1) : query); // Remove the # when searching on instagram
+        parameters.put(USER_ID, userId);
+        parameters.put(Q, query.charAt(0) == '#' ? query.substring(1) : query); // Remove the # when searching on instagram
 
         GraphResponse response = makeGraphRequest(TAG_SEARCH_ID, parameters);
-        return response.getJSONObject().getJSONArray(DATA_KEY).getJSONObject(0).getString(ID_KEY);
+        return response.getJSONObject().getJSONArray(DATA).getJSONObject(0).getString(ID);
     }
 
     public JSONArray fetchPostsWithTrend(Trend trend) throws JSONException {
@@ -65,11 +81,11 @@ public class InstagramWrapper {
 
         // Get the media from the tagId
         Map<String, String> paramsList = new HashMap<>();
-        paramsList.put("user_id", userId);
-        paramsList.put("fields", "id,permalink,caption,timestamp");
+        paramsList.put(USER_ID, userId);
+        paramsList.put(FIELDS, "id,permalink,caption,timestamp");
 
-        GraphResponse response = makeGraphRequest(String.format(TAG_MEDIA_ID, tagId), paramsList);
-        JSONArray arr = response.getJSONObject().getJSONArray(DATA_KEY);
+        GraphResponse response = makeGraphRequest(String.format(TAG_MEDIA_ID_TEMPLATE, tagId), paramsList);
+        JSONArray arr = response.getJSONObject().getJSONArray(DATA);
 
         for (int i = 0; i < arr.length(); i++) {
             Log.d(TAG, arr.getJSONObject(i).toString(2));

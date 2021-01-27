@@ -4,16 +4,13 @@ import android.os.AsyncTask;
 
 import androidx.lifecycle.MutableLiveData;
 
-import java.util.Arrays;
 import java.util.List;
 
 import gr.uom.socialmediaaggregator.api.wrappers.TwitterWrapper;
 import twitter4j.Trend;
-import twitter4j.Trends;
-import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
-public class GetTwitterTrends extends AsyncTask<Void, Void, Trends> {
+public class GetTwitterTrends extends AsyncTask<Void, Void, List<Trend>> {
 
     private static final int GREECE_WOEID = 23424833;
 
@@ -24,24 +21,17 @@ public class GetTwitterTrends extends AsyncTask<Void, Void, Trends> {
     }
 
     @Override
-    protected Trends doInBackground(Void... voids) {
-        Twitter twitter = TwitterWrapper.getInstance();
-
-        // TODO: 15-Jan-21 Use Twitter API to fetch the trends if the user is not signed
-
-        Trends trends;
+    protected List<Trend> doInBackground(Void... voids) {
         try {
-             trends = twitter.getPlaceTrends(GREECE_WOEID);
+            return TwitterWrapper.getInstance().fetchTrendsForPlace(GREECE_WOEID);
         } catch (TwitterException e) {
-            trends = null;
             e.printStackTrace();
         }
-
-        return trends;
+        return null;
     }
 
     @Override
-    protected void onPostExecute(Trends trends) {
-        mutableTrends.setValue(Arrays.asList(trends.getTrends()));
+    protected void onPostExecute(List<Trend> trends) {
+        mutableTrends.setValue(trends);
     }
 }

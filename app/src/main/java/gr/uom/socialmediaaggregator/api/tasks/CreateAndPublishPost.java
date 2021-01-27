@@ -13,37 +13,55 @@ import twitter4j.TwitterException;
 
 public class CreateAndPublishPost extends AsyncTask<Void, Void, Void> {
 
-    private String body;
-    private InputStream img;
-    private List<SocialMediaPlatform> platformsToPublish;
+    private final String body;
+    private final InputStream img;
+    private final List<SocialMediaPlatform> platforms;
 
-    public CreateAndPublishPost(String body, InputStream img, List<SocialMediaPlatform> platformsToPublish) {
+    public CreateAndPublishPost(String body, InputStream img, List<SocialMediaPlatform> platforms) {
         this.body = body;
         this.img = img;
-        this.platformsToPublish = platformsToPublish;
+        this.platforms = platforms;
     }
 
     @Override
     protected Void doInBackground(Void... voids) {
 
-        try {
-            publishOnTwitter();
+        platforms.forEach(platform -> {
+            try {
+                switch (platform) {
+                    case Twitter:
+                        publishOnTwitter();
+                        break;
+                    case Facebook:
+                        publishOnFacebook();
+                        break;
+                    case Instagram:
+                        publishOnInstagram();
+                        break;
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // FB and IG
         return null;
     }
 
     private void publishOnTwitter() throws TwitterException {
-        Twitter twitter = TwitterWrapper.getInstance();
+        Twitter twitter = TwitterWrapper.getOldInstance();
         StatusUpdate status = new StatusUpdate(body);
         if (img != null)
             status.setMedia("img", img);
-
         twitter.updateStatus(status);
     }
+
+    private void publishOnFacebook() {
+        // TODO: 27-Jan-21 Implement
+    }
+
+    private void publishOnInstagram() {
+        // TODO: 27-Jan-21 Implement
+    }
+
 
 }

@@ -6,7 +6,7 @@ import java.util.Date;
 
 import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
 
-public class Post implements Comparable<Post> {
+public class Post {
 
     private String user;
     private String body;
@@ -16,65 +16,6 @@ public class Post implements Comparable<Post> {
     private Uri redirectUri = null;
 
     private Post() {}
-
-    public String getUser() {
-        return user;
-    }
-
-    public String getTruncatedBody(int length) {
-        if (body.length() <= length)
-            return body;
-        return body.substring(0, length - 3) + "...";
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public Date getPostedDate() {
-        return postedDate;
-    }
-
-    public void setPostedDate(Date postedDate) {
-        this.postedDate = postedDate;
-    }
-
-    public SocialMediaPlatform getSocialMediaPlatform() {
-        return socialMediaPlatform;
-    }
-
-    public void setSocialMediaPlatform(SocialMediaPlatform socialMediaPlatform) {
-        this.socialMediaPlatform = socialMediaPlatform;
-    }
-
-    public Uri getRedirectUri() {
-        return redirectUri;
-    }
-
-    public void setRedirectUri(Uri redirectUri) {
-        this.redirectUri = redirectUri;
-    }
-
-    public Uri getMediaUri() {
-        return mediaUri;
-    }
-
-    public void setMediaUri(Uri mediaUri) {
-        this.mediaUri = mediaUri;
-    }
-
-    @Override
-    public int compareTo(Post o) {
-        return this.postedDate.compareTo(o.postedDate);
-    }
 
     public static class Builder {
 
@@ -122,5 +63,36 @@ public class Post implements Comparable<Post> {
         }
 
     }
+
+    public String getUser() {
+        return user;
+    }
+
+    public String getTruncatedBody(int length) {
+        if (body.length() <= length)
+            return body;
+        return body.substring(0, length - 3) + "...";
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public Date getPostedDate() {
+        return postedDate;
+    }
+
+    public SocialMediaPlatform getSocialMediaPlatform() {
+        return socialMediaPlatform;
+    }
+
+    public Uri getRedirectUri() {
+        return redirectUri;
+    }
+
+    public Uri getMediaUri() {
+        return mediaUri;
+    }
+
 
 }

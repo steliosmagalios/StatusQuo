@@ -93,14 +93,6 @@ public class CreateFragment extends Fragment {
         viewModel.getIsStorySelected().observe(getViewLifecycleOwner(), state -> {
             // Update text visibility
             txtPostText.setVisibility(state ? View.GONE : View.VISIBLE);
-
-//            // Handle Twitter
-//            if (state) { // TODO: 15-Jan-21 Tidy up
-//                switchTwitter.setEnabled(false);
-//                viewModel.changePlatformStatus(SocialMediaPlatform.Twitter, false);
-//            } else {
-//                switchTwitter.setEnabled(true);
-//            }
         });
 
         viewModel.getSelectedImageUri().observe(getViewLifecycleOwner(), uri -> {
@@ -115,25 +107,6 @@ public class CreateFragment extends Fragment {
             } else {
                 txtSelectedName.setText(R.string.add_an_image);
             }
-
-//            // Disable instagram if an image is not selected
-//            if (uri == null) { // TODO: 15-Jan-21 Tidy up
-//                switchInstagram.setEnabled(false);
-//                switchInstagram.setChecked(false);
-//                viewModel.changePlatformStatus(SocialMediaPlatform.Instagram, false);
-//            } else {
-//                switchInstagram.setEnabled(true);
-//            }
-//
-//            if (viewModel.getIsStorySelected().getValue()) { // TODO: 15-Jan-21 Tidy up
-//                if (uri == null) {
-//                    switchFacebook.setEnabled(false);
-//                    switchInstagram.setChecked(false);
-//                    viewModel.changePlatformStatus(SocialMediaPlatform.Facebook, false);
-//                } else {
-//                    switchFacebook.setEnabled(true);
-//                }
-//            }
         });
 
         return view;
@@ -142,12 +115,9 @@ public class CreateFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == SELECT_IMAGE_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK)
-                viewModel.updateImageUri(data.getData());
-            else
-                viewModel.updateImageUri(null);
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
+            viewModel.updateImageUri(
+                resultCode == Activity.RESULT_OK && data != null ? data.getData() : null
+            );
         }
     }
 }

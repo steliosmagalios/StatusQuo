@@ -2,7 +2,6 @@ package gr.uom.socialmediaaggregator.ui.main.ui.connect;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +17,6 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,10 +49,10 @@ public class ConnectFragment extends Fragment {
                 accTokenToAdd.put("facebook_access_token", loginResult.getAccessToken().getToken());
 
                 // Add token to Firestore
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                FirebaseFirestore.getInstance().collection("users")
-                    .document(currentUser.getUid()).set(accTokenToAdd)
-                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Successfully added Facebook to Firebase!"));
+//                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+//                FirebaseFirestore.getInstance().collection("users")
+//                    .document(currentUser.getUid()).set(accTokenToAdd)
+//                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Successfully added Facebook to Firebase!"));
             }
 
             @Override
