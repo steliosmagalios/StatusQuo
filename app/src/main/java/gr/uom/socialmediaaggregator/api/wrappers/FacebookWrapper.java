@@ -9,13 +9,12 @@ import com.facebook.GraphResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import twitter4j.Trend;
-
-public class InstagramWrapper {
+public class FacebookWrapper {
 
     // Endpoints
     private static final String PAGE_ID_TEMPLATE = "/%s";
@@ -33,28 +32,36 @@ public class InstagramWrapper {
 
     public static final String TAG = "SMA";
 
-    // Singleton stuff
-    private static InstagramWrapper instance;
 
-    public static InstagramWrapper init(AccessToken accessToken) {
-        instance = new InstagramWrapper(accessToken);
+    // Singleton stuff
+    private static FacebookWrapper instance;
+
+    public static FacebookWrapper init(AccessToken accessToken) {
+        instance = new FacebookWrapper(accessToken);
         return instance;
     }
 
-    public static InstagramWrapper getInstance() {
+    public static FacebookWrapper getInstance() {
         return instance;
     }
 
 
     private final AccessToken accessToken;
+    private AccessToken pageAccessToken;
 
-    private InstagramWrapper(AccessToken accessToken) {
+    private String fbPageId;
+    private String igUserId;
+
+    private FacebookWrapper(AccessToken accessToken) {
         this.accessToken = accessToken;
     }
 
     private String getPageIdFromUser() throws JSONException {
         GraphResponse response = makeGraphRequest(ACCOUNTS_ID);
-        return response.getJSONObject().getJSONArray(DATA).getJSONObject(0).getString(ID);
+        JSONObject page = response.getJSONObject().getJSONArray(DATA).getJSONObject(0);
+
+        pageAccessToken = new AccessToken(page.getString("access_token"), accessToken.getApplicationId(), accessToken.getUserId(), accessToken.getPermissions(), accessToken.getDeclinedPermissions(), accessToken.getSource(), accessToken.getExpires(), accessToken.getLastRefresh(), accessToken.getDataAccessExpirationTime());
+        return page.getString(ID);
     }
 
     private String getIGUserFromPage(String pageId) throws JSONException {
@@ -74,14 +81,17 @@ public class InstagramWrapper {
         return response.getJSONObject().getJSONArray(DATA).getJSONObject(0).getString(ID);
     }
 
-    public JSONArray fetchPostsWithTrend(Trend trend) throws JSONException {
-        String pageId = getPageIdFromUser();
-        String userId = getIGUserFromPage(pageId);
-        String tagId = getTagIdFromQuery(userId, trend.getName());
+    public void getUserCredentials() throws JSONException {
+        fbPageId = getPageIdFromUser();
+        igUserId = getIGUserFromPage(fbPageId);
+    }
+
+    public JSONArray getInstagramPostsWithTrend(String trend) throws JSONException {
+        String tagId = getTagIdFromQuery(igUserId, trend);
 
         // Get the media from the tagId
         Map<String, String> paramsList = new HashMap<>();
-        paramsList.put(USER_ID, userId);
+        paramsList.put(USER_ID, igUserId);
         paramsList.put(FIELDS, "id,permalink,caption,timestamp");
 
         GraphResponse response = makeGraphRequest(String.format(TAG_MEDIA_ID_TEMPLATE, tagId), paramsList);
@@ -92,6 +102,50 @@ public class InstagramWrapper {
         }
 
         return arr;
+    }
+
+    public GraphResponse publishPostToFacebookPage(String message, String imageUrl) {
+        try {
+            JSONObject body = new JSONObject();
+            body.put("message", message);
+
+            GraphRequest request;
+            if (imageUrl != null) {
+                body.put("url", imageUrl);
+                request = GraphRequest.newPostRequest(pageAccessToken, String.format("%s/photos", fbPageId), body, null);
+            } else {
+                request = GraphRequest.newPostRequest(pageAccessToken, String.format("%s/feed", fbPageId), body, null);
+            }
+
+            return request.executeAndWait();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public GraphResponse publishPostToInstagram(String message, String imageUrl) {
+        try {
+            JSONObject parameters;
+
+            // Publish and get the container
+            parameters = new JSONObject();
+            parameters.put("image_url", imageUrl);
+            parameters.put("caption", message);
+
+            GraphResponse mediaResponse = GraphRequest.newPostRequest(pageAccessToken, String.format("%s/media", igUserId), parameters, null).executeAndWait();
+
+            // Publish the post
+            String postId = mediaResponse.getJSONObject().getString("id");
+            parameters = new JSONObject();
+            parameters.put("creation_id", postId);
+
+            return GraphRequest.newPostRequest(pageAccessToken, String.format("%s/media_publish", igUserId), parameters, null).executeAndWait();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
     }
 
     private GraphResponse makeGraphRequest(String endpoint) {

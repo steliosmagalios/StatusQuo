@@ -40,7 +40,8 @@ public class ConnectFragment extends Fragment {
         btnFacebookLogin = view.findViewById(R.id.btnFacebookLogin);
         btnFacebookLogin.setFragment(this);
 
-        btnFacebookLogin.setReadPermissions("email", "instagram_basic" ,"pages_show_list");
+        btnFacebookLogin.setReadPermissions("email", "instagram_basic" ,"pages_show_list", "pages_manage_posts", "pages_manage_metadata", "pages_read_engagement");
+        btnFacebookLogin.setPublishPermissions("");
 
         LoginManager.getInstance().registerCallback(facebookCallbackManager, new FacebookCallback<LoginResult>() {
             @Override

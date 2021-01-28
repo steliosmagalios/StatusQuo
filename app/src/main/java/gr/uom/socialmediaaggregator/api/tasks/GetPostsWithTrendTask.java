@@ -14,13 +14,13 @@ import java.util.List;
 import gr.uom.socialmediaaggregator.api.comparators.IPostComparator;
 import gr.uom.socialmediaaggregator.api.comparators.NewestToOldestPostComparator;
 import gr.uom.socialmediaaggregator.api.parsers.InstagramParser;
-import gr.uom.socialmediaaggregator.api.wrappers.InstagramWrapper;
+import gr.uom.socialmediaaggregator.api.wrappers.FacebookWrapper;
 import gr.uom.socialmediaaggregator.api.wrappers.TwitterWrapper;
 import gr.uom.socialmediaaggregator.data.model.Post;
 import gr.uom.socialmediaaggregator.ui.main.ui.view_posts.PostsAdapter;
 import twitter4j.Trend;
 
-public class GetPostsWithTrend extends AsyncTask<Void, Void, List<Post>> {
+public class GetPostsWithTrendTask extends AsyncTask<Void, Void, List<Post>> {
 
     private static final OkHttpClient CLIENT = new OkHttpClient();
     private static final IPostComparator COMPARATOR = new NewestToOldestPostComparator();
@@ -32,7 +32,7 @@ public class GetPostsWithTrend extends AsyncTask<Void, Void, List<Post>> {
     private final Trend trend;
     private final PostsAdapter adapter;
 
-    public GetPostsWithTrend(Trend trend, PostsAdapter adapter) {
+    public GetPostsWithTrendTask(Trend trend, PostsAdapter adapter) {
         this.trend = trend;
         this.adapter = adapter;
     }
@@ -46,7 +46,7 @@ public class GetPostsWithTrend extends AsyncTask<Void, Void, List<Post>> {
             posts.addAll(TwitterWrapper.getInstance().fetchPostsWithTrend(trend));
 
             // Instagram
-            JSONArray data = InstagramWrapper.getInstance().fetchPostsWithTrend(trend);
+            JSONArray data = FacebookWrapper.getInstance().getInstagramPostsWithTrend(trend.getName());
             posts.addAll(InstagramParser.getInstance().parse(data));
 
             // IMPORTANT: Fetching posts from Facebook is NOT supported

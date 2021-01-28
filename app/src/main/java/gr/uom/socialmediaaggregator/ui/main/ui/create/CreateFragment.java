@@ -14,24 +14,35 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 import gr.uom.socialmediaaggregator.R;
-import gr.uom.socialmediaaggregator.api.tasks.CreateAndPublishPost;
+import gr.uom.socialmediaaggregator.api.tasks.PublishPostTask;
 import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
 
 public class CreateFragment extends Fragment {
 
-    public static final String TAG = "SMA";
+    // Get FirebaseStorage
+    private final FirebaseStorage storage = FirebaseStorage.getInstance();
+
     public static final int SELECT_IMAGE_REQUEST_CODE = 100;
     private CreateViewModel viewModel;
 
@@ -75,14 +86,31 @@ public class CreateFragment extends Fragment {
         });
 
         btnPublish.setOnClickListener(v -> {
-            String body = txtPostText.getText().toString();
-            Uri imgUri = viewModel.getSelectedImageUri().getValue();
+            // Get the social media
+            List<SocialMediaPlatform> platforms = new ArrayList<>();
+            viewModel.getPublishMedia().getValue().forEach((platform, isSelected) -> {
+                if (isSelected)
+                    platforms.add(platform);
+            });
 
-            try {
-                InputStream imgStream = imgUri != null ? getContext().getContentResolver().openInputStream(imgUri) : null;
-                new CreateAndPublishPost(body, imgStream, new ArrayList<>()).execute(); // TODO: 15-Jan-21 Replace with actual SocialMediaPlatforms
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+            // Depending on whether we are publishing a post or a story, act accordingly
+            if (viewModel.getIsStorySelected().getValue() != null && !viewModel.getIsStorySelected().getValue()) {
+                String messageBody = txtPostText.getText().toString();
+                try {
+                    // Try to upload the image (if it exists) and publish the posts.
+                    uploadImageToFirebase(mediaUri -> {
+                        PublishPostTask task = new PublishPostTask(messageBody, mediaUri, platforms);
+                        task.addCallback(nothing -> {
+                            Toast.makeText(view.getContext(), "Posted!", Toast.LENGTH_SHORT).show();
+                            Navigation.findNavController(view).navigate(R.id.nav_home);
+                        });
+                        task.execute();
+                    });
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // TODO: 28-Jan-21 Make publish story
             }
         });
 
@@ -110,6 +138,29 @@ public class CreateFragment extends Fragment {
         });
 
         return view;
+    }
+
+    // Upload image to firebase and returns the download url of the image
+    private void uploadImageToFirebase(Consumer<Uri> callback) throws FileNotFoundException {
+        if (viewModel.getSelectedImageUri().getValue() != null) {
+            Uri imageUri = viewModel.getSelectedImageUri().getValue();
+            InputStream imgStream = getContext().getContentResolver().openInputStream(imageUri);
+
+            UUID imageUUID = UUID.randomUUID(); // Give a unique name to the image
+            StorageReference imgRef = storage.getReference().child("images/" + imageUUID.toString());
+            UploadTask imgUploadTask = imgRef.putStream(imgStream);
+            imgUploadTask.continueWithTask(task -> {
+                if (!task.isSuccessful())
+                    throw task.getException();
+                return imgRef.getDownloadUrl();
+            }).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    callback.accept(task.getResult());
+                }
+            });
+        } else {
+            callback.accept(null);
+        }
     }
 
     @Override

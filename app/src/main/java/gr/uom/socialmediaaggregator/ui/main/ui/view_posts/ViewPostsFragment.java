@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gr.uom.socialmediaaggregator.R;
-import gr.uom.socialmediaaggregator.api.tasks.GetPostsWithTrend;
+import gr.uom.socialmediaaggregator.api.tasks.GetPostsWithTrendTask;
 import gr.uom.socialmediaaggregator.data.model.Post;
 import twitter4j.Trend;
 
@@ -37,7 +37,7 @@ public class ViewPostsFragment extends Fragment {
 
         Log.d("SMA", trend.getQuery());
 
-        new GetPostsWithTrend(trend, adapter).execute();
+        new GetPostsWithTrendTask(trend, adapter).execute();
 
         return view;
     }

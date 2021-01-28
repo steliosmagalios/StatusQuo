@@ -8,11 +8,11 @@ import gr.uom.socialmediaaggregator.api.wrappers.TwitterWrapper;
 import twitter4j.TwitterException;
 import twitter4j.auth.OAuth2Token;
 
-public class GetTwitterOAuth2Token extends AsyncTask<Void, Void, OAuth2Token> {
+public class GetTwitterOAuth2TokenTask extends AsyncTask<Void, Void, OAuth2Token> {
 
     private final Consumer<Void> callback;
 
-    public GetTwitterOAuth2Token(Consumer<Void> callback) {
+    public GetTwitterOAuth2TokenTask(Consumer<Void> callback) {
         this.callback = callback;
     }
 

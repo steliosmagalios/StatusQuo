@@ -1,6 +1,7 @@
 package gr.uom.socialmediaaggregator.api.wrappers;
 
-import java.io.InputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,10 +29,10 @@ public class TwitterWrapper {
     private TwitterWrapper() {
     }
 
-    public static TwitterWrapper init(String accessToken, String accessTokenSecret) {
+    public static TwitterWrapper init(String accessToken, String accessTokenSecret, boolean useOAuth2) {
         instance = new TwitterWrapper();
         ConfigurationBuilder config = new ConfigurationBuilder()
-                .setApplicationOnlyAuthEnabled(true)
+                .setApplicationOnlyAuthEnabled(useOAuth2)
                 .setOAuthConsumerKey(BuildConfig.TWITTER_API_KEY)
                 .setOAuthConsumerSecret(BuildConfig.TWITTER_API_KEY_SECRET)
                 .setOAuthAccessToken(accessToken)
@@ -64,14 +65,14 @@ public class TwitterWrapper {
         return new ArrayList<>(TwitterParser.getInstance().parse(result.getTweets()));
     }
 
-    public void publishTweet(String message, InputStream imageStream) throws TwitterException {
-        StatusUpdate status = new StatusUpdate(message);
-        if (imageStream != null)
-            status.setMedia("img", imageStream);
-        twitter.updateStatus(status);
+    public void publishTweet(String message, String imageUrl) throws TwitterException, IOException {
+        StatusUpdate statusUpdate = new StatusUpdate(message);
+        if (imageUrl != null)
+            statusUpdate.setMedia("img", new URL(imageUrl).openConnection().getInputStream());
+        twitter.updateStatus(statusUpdate);
     }
 
-    public OAuth2Token requestOAuth2Token() throws TwitterException {
+    public OAuth2Token requestOAuth2Token() throws TwitterException, IllegalStateException {
         return twitter.getOAuth2Token();
     }
 

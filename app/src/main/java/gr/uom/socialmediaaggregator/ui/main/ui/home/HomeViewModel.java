@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import gr.uom.socialmediaaggregator.api.tasks.GetTwitterTrends;
+import gr.uom.socialmediaaggregator.api.tasks.GetTwitterTrendsTask;
 import twitter4j.Trend;
 
 public class HomeViewModel extends ViewModel {
@@ -27,7 +27,7 @@ public class HomeViewModel extends ViewModel {
 
     private void fetchTrends() {
         // Fetch trends from TwitterAPI
-        new GetTwitterTrends(trends).execute();
+        new GetTwitterTrendsTask(trends).execute();
     }
 
     public List<Trend> searchOnTrends(String query) {

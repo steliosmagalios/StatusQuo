@@ -23,8 +23,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import gr.uom.socialmediaaggregator.R;
-import gr.uom.socialmediaaggregator.api.tasks.GetTwitterOAuth2Token;
-import gr.uom.socialmediaaggregator.api.wrappers.InstagramWrapper;
+import gr.uom.socialmediaaggregator.api.tasks.GetFacebookDataTask;
+import gr.uom.socialmediaaggregator.api.tasks.GetTwitterOAuth2TokenTask;
+import gr.uom.socialmediaaggregator.api.wrappers.FacebookWrapper;
 import gr.uom.socialmediaaggregator.api.wrappers.TwitterWrapper;
 import gr.uom.socialmediaaggregator.ui.main.MainActivity;
 
@@ -125,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
         // Facebook
         AccessToken token = AccessToken.getCurrentAccessToken();
         if (token != null && !token.isExpired())
-            InstagramWrapper.init(token);
+            FacebookWrapper.init(token);
     }
 
     @Override
@@ -147,22 +148,27 @@ public class LoginActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         DocumentSnapshot snapshot = task.getResult();
                         if (snapshot != null) {
-                            TwitterWrapper.init(
-                                    snapshot.getString(TWITTER_ACCESS_TOKEN_KEY),
-                                    snapshot.getString(TWITTER_ACCESS_TOKEN_SECRET_KEY)
-                            );
+                            String accessToken = snapshot.getString(TWITTER_ACCESS_TOKEN_KEY);
+                            String accessTokenSecret = snapshot.getString(TWITTER_ACCESS_TOKEN_SECRET_KEY);
+                            TwitterWrapper.init(accessToken, accessTokenSecret, accessToken == null || accessTokenSecret == null);
+                            getFacebookDataAndChangeActivity();
                         } else {
                             TwitterWrapper.init();
-                        }
 
-                        // Get the BearerToken and move to the next activity
-                        new GetTwitterOAuth2Token(v -> {
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
-                        }).execute();
+                            // Also get the BearerToken
+                            new GetTwitterOAuth2TokenTask(v -> getFacebookDataAndChangeActivity()).execute();
+                        }
                     }
                 });
+    }
+
+    private void getFacebookDataAndChangeActivity() {
+        // Get the necessary credentials from Facebook and go to the next activity
+        new GetFacebookDataTask(v1 -> {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }).execute();
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
