@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
+import gr.uom.socialmediaaggregator.data.Platform;
 import gr.uom.socialmediaaggregator.data.model.Post;
 import twitter4j.Status;
 
@@ -29,12 +29,11 @@ public class TwitterParser implements IParser<List<Status>> {
         ArrayList<Post> posts = new ArrayList<>();
         data.forEach(status -> {
             Post.Builder builder = new Post.Builder()
-                    .setSocialMediaPlatform(SocialMediaPlatform.Twitter)
+                    .setPlatform(Platform.Twitter)
                     .setUser(status.getUser().getScreenName())
                     .setBody(status.getText())
                     .setPostedDate(status.getCreatedAt())
                     .setRedirectUri(Uri.parse(String.format(Locale.getDefault(), TWITTER_STATUS_URI_TEMPLATE, status.getUser().getScreenName(), status.getId())));
-//                    .setRedirectUri(Uri.parse("http://twitter.com/" + status.getUser().getScreenName() + "/status/" + status.getId()));
             posts.add(builder.build());
         });
         return posts;

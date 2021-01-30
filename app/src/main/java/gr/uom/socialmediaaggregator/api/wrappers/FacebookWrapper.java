@@ -1,7 +1,6 @@
 package gr.uom.socialmediaaggregator.api.wrappers;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -30,9 +29,6 @@ public class FacebookWrapper {
     private static final String USER_ID = "user_id";
     private static final String INSTAGRAM_BUSINESS_ACCOUNT_KEY = "instagram_business_account";
 
-    public static final String TAG = "SMA";
-
-
     // Singleton stuff
     private static FacebookWrapper instance;
 
@@ -56,6 +52,7 @@ public class FacebookWrapper {
         this.accessToken = accessToken;
     }
 
+    // Gets the Page of the current user. For multiple pages, it should include an in-app page selector
     private String getPageIdFromUser() throws JSONException {
         GraphResponse response = makeGraphRequest(ACCOUNTS_ID);
         JSONObject page = response.getJSONObject().getJSONArray(DATA).getJSONObject(0);
@@ -64,6 +61,7 @@ public class FacebookWrapper {
         return page.getString(ID);
     }
 
+    // Gets the associated Instagram account from the connected FB Page
     private String getIGUserFromPage(String pageId) throws JSONException {
         Map<String, String> parameters = new HashMap<>();
         parameters.put(FIELDS, INSTAGRAM_BUSINESS_ACCOUNT_KEY);
@@ -72,6 +70,7 @@ public class FacebookWrapper {
         return response.getJSONObject().getJSONObject(INSTAGRAM_BUSINESS_ACCOUNT_KEY).getString(ID);
     }
 
+    // Get the Instagram tag id from the String query
     private String getTagIdFromQuery(String userId, String query) throws JSONException {
         Map<String, String> parameters = new HashMap<>();
         parameters.put(USER_ID, userId);
@@ -81,11 +80,13 @@ public class FacebookWrapper {
         return response.getJSONObject().getJSONArray(DATA).getJSONObject(0).getString(ID);
     }
 
+    // Gets the necessary credentials from the connected account
     public void getUserCredentials() throws JSONException {
         fbPageId = getPageIdFromUser();
         igUserId = getIGUserFromPage(fbPageId);
     }
 
+    // Get the Instagram posts
     public JSONArray getInstagramPostsWithTrend(String trend) throws JSONException {
         String tagId = getTagIdFromQuery(igUserId, trend);
 
@@ -95,15 +96,10 @@ public class FacebookWrapper {
         paramsList.put(FIELDS, "id,permalink,caption,timestamp");
 
         GraphResponse response = makeGraphRequest(String.format(TAG_MEDIA_ID_TEMPLATE, tagId), paramsList);
-        JSONArray arr = response.getJSONObject().getJSONArray(DATA);
-
-        for (int i = 0; i < arr.length(); i++) {
-            Log.d(TAG, arr.getJSONObject(i).toString(2));
-        }
-
-        return arr;
+        return response.getJSONObject().getJSONArray(DATA);
     }
 
+    // Publishes a post to Facebook Page
     public GraphResponse publishPostToFacebookPage(String message, String imageUrl) {
         try {
             JSONObject body = new JSONObject();
@@ -124,6 +120,7 @@ public class FacebookWrapper {
         return null;
     }
 
+    // Publishes a post to Instagram
     public GraphResponse publishPostToInstagram(String message, String imageUrl) {
         try {
             JSONObject parameters;
@@ -144,7 +141,6 @@ public class FacebookWrapper {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
         return null;
     }
 
@@ -152,6 +148,7 @@ public class FacebookWrapper {
         return makeGraphRequest(endpoint, null);
     }
 
+    // Wrapper method to make a request to the Facebook Graph
     private GraphResponse makeGraphRequest(String endpoint, Map<String, String> parameters) {
         GraphRequest request = GraphRequest.newGraphPathRequest(accessToken, endpoint, null);
 

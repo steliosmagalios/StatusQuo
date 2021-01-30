@@ -9,21 +9,21 @@ import androidx.lifecycle.ViewModel;
 import java.util.HashMap;
 import java.util.Map;
 
-import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
+import gr.uom.socialmediaaggregator.data.Platform;
 
 public class CreateViewModel extends ViewModel {
 
-    private MutableLiveData<Map<SocialMediaPlatform, Boolean>> publishMedia;
+    private MutableLiveData<Map<Platform, Boolean>> publishMedia;
     private MutableLiveData<Boolean> isStorySelected;
     private MutableLiveData<Uri> selectedImageUri;
 
     public CreateViewModel() {
         publishMedia = new MutableLiveData<>(new HashMap<>());
-        for (SocialMediaPlatform value : SocialMediaPlatform.values())
+        for (Platform value : Platform.values())
             publishMedia.getValue().put(value, false);
     }
 
-    public LiveData<Map<SocialMediaPlatform, Boolean>> getPublishMedia() {
+    public LiveData<Map<Platform, Boolean>> getPublishMedia() {
         return publishMedia;
     }
 
@@ -47,12 +47,10 @@ public class CreateViewModel extends ViewModel {
         isStorySelected.setValue(state);
     }
 
-    public void changePlatformStatus(SocialMediaPlatform platform, Boolean state) {
-        Map<SocialMediaPlatform, Boolean> newMap = new HashMap<>(publishMedia.getValue());
+    public void changePlatformStatus(Platform platform, Boolean state) {
+        Map<Platform, Boolean> newMap = new HashMap<>(publishMedia.getValue());
         newMap.put(platform, state);
         publishMedia.setValue(newMap);
-//        publishMedia.put(platform, state);
-//        publishMedia.forEach((plat, st) -> Log.d("SMA", plat.toString() + ": " + st.toString()));
     }
 
 }

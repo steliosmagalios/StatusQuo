@@ -4,7 +4,7 @@ import android.net.Uri;
 
 import java.util.Date;
 
-import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
+import gr.uom.socialmediaaggregator.data.Platform;
 
 public class Post {
 
@@ -12,7 +12,7 @@ public class Post {
     private String body;
     private Date postedDate;
     private Uri mediaUri;
-    private SocialMediaPlatform socialMediaPlatform;
+    private Platform platform;
     private Uri redirectUri = null;
 
     private Post() {}
@@ -22,7 +22,7 @@ public class Post {
         private String user = "";
         private String body = "";
         private Date postedDate = new Date();
-        private SocialMediaPlatform socialMediaPlatform = null;
+        private Platform platform = null;
         private Uri redirectUri = null;
 
         public Builder() {}
@@ -42,8 +42,8 @@ public class Post {
             return this;
         }
 
-        public Builder setSocialMediaPlatform(SocialMediaPlatform socialMediaPlatform) {
-            this.socialMediaPlatform = socialMediaPlatform;
+        public Builder setPlatform(Platform platform) {
+            this.platform = platform;
             return this;
         }
 
@@ -57,7 +57,7 @@ public class Post {
             post.user = this.user;
             post.body = this.body;
             post.postedDate = this.postedDate;
-            post.socialMediaPlatform = this.socialMediaPlatform;
+            post.platform = this.platform;
             post.redirectUri = this.redirectUri;
             return post;
         }
@@ -82,8 +82,8 @@ public class Post {
         return postedDate;
     }
 
-    public SocialMediaPlatform getSocialMediaPlatform() {
-        return socialMediaPlatform;
+    public Platform getPlatform() {
+        return platform;
     }
 
     public Uri getRedirectUri() {

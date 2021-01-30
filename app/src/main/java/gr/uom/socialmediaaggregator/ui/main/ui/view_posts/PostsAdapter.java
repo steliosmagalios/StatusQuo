@@ -67,7 +67,7 @@ public class PostsAdapter extends ArrayAdapter<Post> implements AdapterView.OnIt
         viewHolder.txtDate.setText(post.getPostedDate().toString());
 
         int iconId;
-        switch (post.getSocialMediaPlatform()) {
+        switch (post.getPlatform()) {
             case Twitter:
                 iconId = R.drawable.ic_twitter;
                 break;

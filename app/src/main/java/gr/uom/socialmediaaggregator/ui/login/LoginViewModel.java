@@ -1,22 +1,16 @@
 package gr.uom.socialmediaaggregator.ui.login;
 
-import androidx.annotation.NonNull;
+import android.util.Patterns;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import android.util.Patterns;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import gr.uom.socialmediaaggregator.data.LoginRepository;
-import gr.uom.socialmediaaggregator.data.Result;
-import gr.uom.socialmediaaggregator.data.model.LoggedInUser;
 import gr.uom.socialmediaaggregator.R;
+import gr.uom.socialmediaaggregator.data.LoginRepository;
 
 public class LoginViewModel extends ViewModel {
 

@@ -9,17 +9,17 @@ import java.util.function.Consumer;
 
 import gr.uom.socialmediaaggregator.api.wrappers.FacebookWrapper;
 import gr.uom.socialmediaaggregator.api.wrappers.TwitterWrapper;
-import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
+import gr.uom.socialmediaaggregator.data.Platform;
 
 public class PublishPostTask extends AsyncTask<Void, Void, Void> {
 
     private final String message;
     private final Uri imageUri;
-    private final List<SocialMediaPlatform> platforms;
+    private final List<Platform> platforms;
 
     private final List<Consumer<Void>> callbackList = new ArrayList<>();
 
-    public PublishPostTask(String message, Uri imageUri, List<SocialMediaPlatform> platforms) {
+    public PublishPostTask(String message, Uri imageUri, List<Platform> platforms) {
         this.message = message;
         this.imageUri = imageUri;
         this.platforms = platforms;
@@ -29,6 +29,7 @@ public class PublishPostTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... voids) {
         platforms.forEach(platform -> {
             try {
+                // Possible optimization: make each platform publishing async to reduce time
                 switch (platform) {
                     case Twitter:
                         TwitterWrapper.getInstance().publishTweet(

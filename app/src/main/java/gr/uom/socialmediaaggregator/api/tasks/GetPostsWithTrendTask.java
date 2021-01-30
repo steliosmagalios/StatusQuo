@@ -2,13 +2,9 @@ package gr.uom.socialmediaaggregator.api.tasks;
 
 import android.os.AsyncTask;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Protocol;
-
 import org.json.JSONArray;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import gr.uom.socialmediaaggregator.api.comparators.IPostComparator;
@@ -22,12 +18,7 @@ import twitter4j.Trend;
 
 public class GetPostsWithTrendTask extends AsyncTask<Void, Void, List<Post>> {
 
-    private static final OkHttpClient CLIENT = new OkHttpClient();
     private static final IPostComparator COMPARATOR = new NewestToOldestPostComparator();
-
-    static {
-        CLIENT.setProtocols(Collections.singletonList(Protocol.HTTP_1_1));
-    }
 
     private final Trend trend;
     private final PostsAdapter adapter;
@@ -49,7 +40,7 @@ public class GetPostsWithTrendTask extends AsyncTask<Void, Void, List<Post>> {
             JSONArray data = FacebookWrapper.getInstance().getInstagramPostsWithTrend(trend.getName());
             posts.addAll(InstagramParser.getInstance().parse(data));
 
-            // IMPORTANT: Fetching posts from Facebook is NOT supported
+            // IMPORTANT: Fetching posts from Facebook is NOT supported. sadge
         } catch (Exception ex) {
             ex.printStackTrace();
         }

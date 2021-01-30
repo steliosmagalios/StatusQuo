@@ -12,7 +12,7 @@ import twitter4j.TwitterException;
 
 public class GetTwitterTrendsTask extends AsyncTask<Void, Void, List<Trend>> {
 
-    private static final int GREECE_WOEID = 23424833;
+    private static final int GREECE_WOEID = 23424833; // In a real environment, get it from user's location
 
     private final MutableLiveData<List<Trend>> mutableTrends;
 

@@ -36,7 +36,7 @@ import java.util.function.Consumer;
 
 import gr.uom.socialmediaaggregator.R;
 import gr.uom.socialmediaaggregator.api.tasks.PublishPostTask;
-import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
+import gr.uom.socialmediaaggregator.data.Platform;
 
 public class CreateFragment extends Fragment {
 
@@ -75,9 +75,9 @@ public class CreateFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(CreateViewModel.class);
         initComponents(view);
 
-        switchTwitter.setOnCheckedChangeListener((buttonView, isChecked) -> viewModel.changePlatformStatus(SocialMediaPlatform.Twitter, isChecked));
-        switchFacebook.setOnCheckedChangeListener((buttonView, isChecked) -> viewModel.changePlatformStatus(SocialMediaPlatform.Facebook, isChecked));
-        switchInstagram.setOnCheckedChangeListener((buttonView, isChecked) -> viewModel.changePlatformStatus(SocialMediaPlatform.Instagram, isChecked));
+        switchTwitter.setOnCheckedChangeListener((buttonView, isChecked) -> viewModel.changePlatformStatus(Platform.Twitter, isChecked));
+        switchFacebook.setOnCheckedChangeListener((buttonView, isChecked) -> viewModel.changePlatformStatus(Platform.Facebook, isChecked));
+        switchInstagram.setOnCheckedChangeListener((buttonView, isChecked) -> viewModel.changePlatformStatus(Platform.Instagram, isChecked));
 
         togglePostType.setOnCheckedChangeListener((buttonView, isChecked) -> viewModel.updateStoryState(isChecked));
 
@@ -88,7 +88,7 @@ public class CreateFragment extends Fragment {
 
         btnPublish.setOnClickListener(v -> {
             // Get the social media
-            List<SocialMediaPlatform> platforms = new ArrayList<>();
+            List<Platform> platforms = new ArrayList<>();
             viewModel.getPublishMedia().getValue().forEach((platform, isSelected) -> {
                 if (isSelected)
                     platforms.add(platform);
@@ -113,7 +113,7 @@ public class CreateFragment extends Fragment {
             } else {
                 platforms.forEach(platform -> {
                     // Sadgely, stories only work on Instagram and can be shared to Facebook, but not Twitter
-                    if (platform == SocialMediaPlatform.Instagram) {
+                    if (platform == Platform.Instagram) {
                         Intent igIntent = new Intent("com.instagram.share.ADD_TO_STORY");
                         igIntent.setDataAndType(
                                 viewModel.getSelectedImageUri().getValue(),

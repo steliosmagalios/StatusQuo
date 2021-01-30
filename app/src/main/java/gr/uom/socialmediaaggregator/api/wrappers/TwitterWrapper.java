@@ -26,8 +26,7 @@ public class TwitterWrapper {
 
     private Twitter twitter;
 
-    private TwitterWrapper() {
-    }
+    private TwitterWrapper() {}
 
     public static TwitterWrapper init(String accessToken, String accessTokenSecret, boolean useOAuth2) {
         instance = new TwitterWrapper();
@@ -55,16 +54,19 @@ public class TwitterWrapper {
         return instance;
     }
 
+    // Get the Twitter trending topics for a specific place in the world
     public List<Trend> fetchTrendsForPlace(int woeid) throws TwitterException {
         Trends trends = twitter.getPlaceTrends(woeid);
         return new ArrayList<>(Arrays.asList(trends.getTrends()));
     }
 
+    // Get the Tweets for a trending topic
     public List<Post> fetchPostsWithTrend(Trend trend) throws TwitterException {
         QueryResult result = twitter.search(new Query(trend.getQuery()));
         return new ArrayList<>(TwitterParser.getInstance().parse(result.getTweets()));
     }
 
+    // Publish a tweet on behalf of the connected user
     public void publishTweet(String message, String imageUrl) throws TwitterException, IOException {
         StatusUpdate statusUpdate = new StatusUpdate(message);
         if (imageUrl != null)
@@ -72,6 +74,7 @@ public class TwitterWrapper {
         twitter.updateStatus(statusUpdate);
     }
 
+    // Get the OAuth2Token for the cases the user is not authenticated
     public OAuth2Token requestOAuth2Token() throws TwitterException, IllegalStateException {
         return twitter.getOAuth2Token();
     }

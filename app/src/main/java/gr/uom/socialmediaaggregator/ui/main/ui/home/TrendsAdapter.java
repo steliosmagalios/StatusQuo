@@ -22,6 +22,7 @@ import twitter4j.Trend;
 
 public class TrendsAdapter extends ArrayAdapter<Trend> implements AdapterView.OnItemClickListener {
 
+    public static final String TREND_KEY = "TREND";
     private final LayoutInflater inflater;
     private final int layoutResource;
     private List<Trend> trendsList;
@@ -76,7 +77,7 @@ public class TrendsAdapter extends ArrayAdapter<Trend> implements AdapterView.On
         Trend trend = trendsList.get(position);
 
         Bundle args = new Bundle();
-        args.putSerializable("TREND", trend);
+        args.putSerializable(TREND_KEY, trend);
 
         NavHostFragment.findNavController(fragment).navigate(R.id.action_nav_home_to_viewPostsFragment, args);
     }
