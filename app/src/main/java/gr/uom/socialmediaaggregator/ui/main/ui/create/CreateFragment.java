@@ -40,6 +40,7 @@ import gr.uom.socialmediaaggregator.data.SocialMediaPlatform;
 
 public class CreateFragment extends Fragment {
 
+    public static final String IMAGE_MIME_TYPE = "image/*";
     // Get FirebaseStorage
     private final FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -110,7 +111,18 @@ public class CreateFragment extends Fragment {
                     e.printStackTrace();
                 }
             } else {
-                // TODO: 28-Jan-21 Make publish story
+                platforms.forEach(platform -> {
+                    // Sadgely, stories only work on Instagram and can be shared to Facebook, but not Twitter
+                    if (platform == SocialMediaPlatform.Instagram) {
+                        Intent igIntent = new Intent("com.instagram.share.ADD_TO_STORY");
+                        igIntent.setDataAndType(
+                                viewModel.getSelectedImageUri().getValue(),
+                                IMAGE_MIME_TYPE
+                        );
+                        igIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        startActivity(igIntent);
+                    }
+                });
             }
         });
 
