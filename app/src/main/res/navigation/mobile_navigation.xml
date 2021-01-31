@@ -28,6 +28,6 @@
     <fragment
         android:id="@+id/viewPostsFragment"
         android:name="gr.uom.socialmediaaggregator.ui.main.ui.view_posts.ViewPostsFragment"
-        android:label="fragment_view_posts"
+        android:label="@string/view_posts_label"
         tools:layout="@layout/fragment_view_posts" />
 </navigation>
