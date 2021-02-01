@@ -51,11 +51,6 @@ public class LoginActivity extends AppCompatActivity {
         // Fetch API keys
         fetchAPIKeys();
 
-        // Login bypassing used for development purposes
-        findViewById(R.id.btnBypass).setOnClickListener(v -> {
-            loginViewModel.login("demo@sma.com", "123456");
-        });
-
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
         final Button loginButton = findViewById(R.id.login);
