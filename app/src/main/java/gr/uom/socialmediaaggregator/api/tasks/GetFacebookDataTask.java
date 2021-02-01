@@ -19,7 +19,9 @@ public class GetFacebookDataTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... voids) {
         try {
-            FacebookWrapper.getInstance().getUserCredentials();
+            FacebookWrapper wrapper = FacebookWrapper.getInstance();
+            if (wrapper != null)
+                wrapper.getUserCredentials();
         } catch (JSONException e) {
             e.printStackTrace();
         }

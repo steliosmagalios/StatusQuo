@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +19,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import gr.uom.socialmediaaggregator.R;
 import gr.uom.socialmediaaggregator.ui.login.LoginActivity;
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         });
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+        putUserDetails(navigationView.getHeaderView(0));
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -54,6 +58,16 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+    }
+
+    private void putUserDetails(View v) {
+        final TextView txtUserName = v.findViewById(R.id.txtUserName);
+        final TextView txtUserEmail = v.findViewById(R.id.txtUserEmail);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        txtUserEmail.setText(currentUser.getEmail());
+        String displayName = currentUser.getDisplayName();
+        txtUserName.setText(displayName != null && !displayName.isEmpty() ? currentUser.getDisplayName() : "Current User");
     }
 
     @Override

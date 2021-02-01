@@ -94,35 +94,41 @@ public class CreateFragment extends Fragment {
                     platforms.add(platform);
             });
 
-            // Depending on whether we are publishing a post or a story, act accordingly
-            if (viewModel.getIsStorySelected().getValue() != null && !viewModel.getIsStorySelected().getValue()) {
-                String messageBody = txtPostText.getText().toString();
-                try {
-                    // Try to upload the image (if it exists) and publish the posts.
-                    uploadImageToFirebase(mediaUri -> {
-                        PublishPostTask task = new PublishPostTask(messageBody, mediaUri, platforms);
-                        task.addCallback(nothing -> {
-                            Toast.makeText(view.getContext(), "Posted!", Toast.LENGTH_SHORT).show();
-                            Navigation.findNavController(view).navigate(R.id.nav_home);
-                        });
-                        task.execute();
-                    });
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+            if (platforms.isEmpty()) {
+                Toast.makeText(getContext(), "No platforms selected!", Toast.LENGTH_SHORT).show();
             } else {
-                platforms.forEach(platform -> {
-                    // Sadgely, stories only work on Instagram and can be shared to Facebook, but not Twitter
-                    if (platform == Platform.Instagram) {
-                        Intent igIntent = new Intent("com.instagram.share.ADD_TO_STORY");
-                        igIntent.setDataAndType(
-                                viewModel.getSelectedImageUri().getValue(),
-                                IMAGE_MIME_TYPE
-                        );
-                        igIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        startActivity(igIntent);
+                Toast.makeText(getContext(), "Posting...", Toast.LENGTH_SHORT).show();
+
+                // Depending on whether we are publishing a post or a story, act accordingly
+                if (viewModel.getIsStorySelected().getValue() != null && !viewModel.getIsStorySelected().getValue()) {
+                    String messageBody = txtPostText.getText().toString();
+                    try {
+                        // Try to upload the image (if it exists) and publish the posts.
+                        uploadImageToFirebase(mediaUri -> {
+                            PublishPostTask task = new PublishPostTask(messageBody, mediaUri, platforms);
+                            task.addCallback(nothing -> {
+                                Toast.makeText(view.getContext(), "Posted!", Toast.LENGTH_SHORT).show();
+                                Navigation.findNavController(view).navigate(R.id.nav_home);
+                            });
+                            task.execute();
+                        });
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
                     }
-                });
+                } else {
+                    platforms.forEach(platform -> {
+                        // Sadgely, stories only work on Instagram and can be shared to Facebook, but not Twitter
+                        if (platform == Platform.Instagram) {
+                            Intent igIntent = new Intent("com.instagram.share.ADD_TO_STORY");
+                            igIntent.setDataAndType(
+                                    viewModel.getSelectedImageUri().getValue(),
+                                    IMAGE_MIME_TYPE
+                            );
+                            igIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            startActivity(igIntent);
+                        }
+                    });
+                }
             }
         });
 

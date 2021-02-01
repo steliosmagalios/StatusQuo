@@ -6,11 +6,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -20,6 +22,8 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
 import gr.uom.socialmediaaggregator.R;
+import gr.uom.socialmediaaggregator.api.tasks.GetFacebookDataTask;
+import gr.uom.socialmediaaggregator.api.wrappers.FacebookWrapper;
 
 public class ConnectFragment extends Fragment {
 
@@ -40,6 +44,12 @@ public class ConnectFragment extends Fragment {
         LoginManager.getInstance().registerCallback(facebookCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                FacebookWrapper.init(loginResult.getAccessToken());
+                new GetFacebookDataTask(v -> {
+                    // When the data is fetched, go to home screen
+                    Toast.makeText(getContext(), "Facebook connected", Toast.LENGTH_SHORT).show();
+                    NavHostFragment.findNavController(ConnectFragment.this).navigate(R.id.nav_home);
+                }).execute();
                 Log.d(TAG, "onSuccess: Successfully connected Facebook user" + loginResult.getAccessToken().getUserId());
             }
 

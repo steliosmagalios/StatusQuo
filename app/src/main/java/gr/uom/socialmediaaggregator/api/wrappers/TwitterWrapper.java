@@ -22,7 +22,7 @@ import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterWrapper {
 
-    private static TwitterWrapper instance = new TwitterWrapper();
+    private static TwitterWrapper instance;
 
     private Twitter twitter;
 

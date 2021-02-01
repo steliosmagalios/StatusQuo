@@ -150,8 +150,13 @@ public class LoginActivity extends AppCompatActivity {
                         if (snapshot != null) {
                             String accessToken = snapshot.getString(TWITTER_ACCESS_TOKEN_KEY);
                             String accessTokenSecret = snapshot.getString(TWITTER_ACCESS_TOKEN_SECRET_KEY);
-                            TwitterWrapper.init(accessToken, accessTokenSecret, accessToken == null || accessTokenSecret == null);
-                            getFacebookDataAndChangeActivity();
+                            boolean userExists = accessToken != null && accessTokenSecret != null;
+                            TwitterWrapper.init(accessToken, accessTokenSecret, !userExists);
+                            if (!userExists) {
+                                new GetTwitterOAuth2TokenTask(v -> getFacebookDataAndChangeActivity()).execute();
+                            } else {
+                                getFacebookDataAndChangeActivity();
+                            }
                         } else {
                             TwitterWrapper.init();
 
